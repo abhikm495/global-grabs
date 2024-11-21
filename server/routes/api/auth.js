@@ -9,8 +9,8 @@ const auth = require('../../middleware/auth');
 
 // Bring in Models & Helpers
 const User = require('../../models/user');
-const mailchimp = require('../../services/mailchimp');
-const mailgun = require('../../services/mailgun');
+const brevoSubs = require('../../services/brevoSubs');
+const brevoMail = require('../../services/brevoMail');
 const keys = require('../../config/keys');
 const { EMAIL_PROVIDER, JWT_COOKIE } = require('../../constants');
 
@@ -108,7 +108,7 @@ router.post('/register', async (req, res) => {
 
     let subscribed = false;
     if (isSubscribed) {
-      const result = await mailchimp.subscribeToNewsletter(email);
+      const result = await brevoSubs.subscribeToNewsletter(email);
 
       if (result.status === 'subscribed') {
         subscribed = true;
@@ -132,7 +132,7 @@ router.post('/register', async (req, res) => {
       id: registeredUser.id
     };
 
-    await mailgun.sendEmail(
+    await brevoMail.sendEmail(
       registeredUser.email,
       'signup',
       null,
@@ -154,6 +154,7 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("register error",error);
     res.status(400).json({
       error: 'Your request could not be processed. Please try again.'
     });
@@ -186,7 +187,7 @@ router.post('/forgot', async (req, res) => {
 
     existingUser.save();
 
-    await mailgun.sendEmail(
+    await brevoMail.sendEmail(
       existingUser.email,
       'reset',
       req.headers.host,
@@ -233,7 +234,7 @@ router.post('/reset/:token', async (req, res) => {
 
     resetUser.save();
 
-    await mailgun.sendEmail(resetUser.email, 'reset-confirmation');
+    await brevoMail.sendEmail(resetUser.email, 'reset-confirmation');
 
     res.status(200).json({
       success: true,
@@ -280,7 +281,7 @@ router.post('/reset', auth, async (req, res) => {
     existingUser.password = hash;
     existingUser.save();
 
-    await mailgun.sendEmail(existingUser.email, 'reset-confirmation');
+    await brevoMail.sendEmail(existingUser.email, 'reset-confirmation');
 
     res.status(200).json({
       success: true,
