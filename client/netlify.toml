@@ -1,0 +1,12 @@
+# netlify.toml
+
+[build]
+  # Directory where the React build output is located
+  publish = "app/build"
+  command = "npm run build"
+
+[[redirects]]
+  # Redirect all routes to index.html
+  from = "/*"
+  to = "public/index.html"
+  status = 200
