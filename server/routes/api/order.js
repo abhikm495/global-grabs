@@ -3,6 +3,7 @@ const router = express.Router();
 const Mongoose = require('mongoose');
 
 // Bring in Models & Utils
+const User=require('../../models/user')
 const Order = require('../../models/order');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
@@ -15,11 +16,13 @@ router.post('/add', auth, async (req, res) => {
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
-    const user = req.user._id;
+    const userId = req.user._id;
+
+    const userDetails=await User.findById(userId);
 
     const order = new Order({
       cart,
-      user,
+      userId,
       total
     });
 
@@ -35,12 +38,12 @@ router.post('/add', auth, async (req, res) => {
     const newOrder = {
       _id: orderDoc._id,
       created: orderDoc.created,
-      user: orderDoc.user,
+      user: userDetails,
       total: orderDoc.total,
       products: cartDoc.products
     };
-
-    await brevoMail.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    
+    await brevoMail.sendEmail(userDetails.email, 'order-confirmation',`${process.env.CLIENT_URL}/order/${newOrder._id}`, newOrder);
 
     res.status(200).json({
       success: true,
@@ -48,6 +51,8 @@ router.post('/add', auth, async (req, res) => {
       order: { _id: orderDoc._id }
     });
   } catch (error) {
+    console.log("error",error);
+    
     res.status(400).json({
       error: 'Your request could not be processed. Please try again.'
     });
