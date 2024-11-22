@@ -29,7 +29,7 @@ exports.sendEmail = async (email, type, host, data) => {
     const message = prepareTemplate(type, host, data);
 
     const config = {
-      sender: { name: "MERN Store!", email: sender },
+      sender: { name: "Global Grabs!", email: sender },
       to: [{ email }],
       subject: message.subject,
       htmlContent: message.text, // Use HTML content instead of plain text for better formatting
@@ -83,7 +83,7 @@ const prepareTemplate = (type, host, data) => {
       break;
 
     case "order-confirmation":
-      message = template.orderConfirmationEmail(data);
+      message = template.orderConfirmationEmail(host,data);
       break;
 
     default:
