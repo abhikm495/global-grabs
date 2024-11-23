@@ -1,4 +1,4 @@
-export const API_URL = process.env.REACT_APP_API_URL;
+export const API_URL = process.env.REACT_APP_API_URL || "https://global-grabs.vercel.app/api";
 
 console.log("API URL",API_URL);
 
