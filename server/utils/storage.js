@@ -1,39 +1,43 @@
-const AWS = require('aws-sdk');
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+const {cloud} = require("../config/keys");
 
-const keys = require('../config/keys');
+// configure cloudinary
+cloudinary.config({
+  cloud_name: cloud.cloudName,
+  api_key: cloud.accessKeyId,
+  api_secret: cloud.secretAccessKey,
+});
 
-exports.s3Upload = async image => {
+exports.cloudinaryUpload = async (image) => {
   try {
-    let imageUrl = '';
-    let imageKey = '';
+    let imageUrl = "";
+    let imageId = "";
 
-    if (!keys.aws.accessKeyId) {
-      console.warn('Missing aws keys');
+    if (!cloud.accessKeyId) {
+      console.warn("Missing Cloudinary keys");
     }
 
     if (image) {
-      const s3bucket = new AWS.S3({
-        accessKeyId: keys.aws.accessKeyId,
-        secretAccessKey: keys.aws.secretAccessKey,
-        region: keys.aws.region
+      const result = await new Promise((resolve, reject) => {
+        streamifier.createReadStream(image.buffer).pipe(
+          cloudinary.uploader.upload_stream(
+            { folder: "uploads", resource_type: "auto" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          )
+        );
       });
 
-      const params = {
-        Bucket: keys.aws.bucketName,
-        Key: image.originalname,
-        Body: image.buffer, 
-        ContentType: image.mimetype
-      };
-
-      const s3Upload = await s3bucket.upload(params).promise();
-
-      imageUrl = s3Upload.Location;
-      imageKey = s3Upload.key;
+      imageUrl = result.secure_url;
+      imageId = result.public_id;
     }
 
-    return { imageUrl, imageKey };
+    return { imageUrl, imageId };
   } catch (error) {
-    console.log("error s3",error);
-    return { imageUrl: '', imageKey: '' };
+    console.log("error cloudinary", error);
+    return { imageUrl: "", imageId: "" };
   }
 };

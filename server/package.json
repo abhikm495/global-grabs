@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "aws-sdk": "^2.799.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dompurify": "^2.3.8",
@@ -28,6 +28,7 @@
     "passport-jwt": "^4.0.0",
     "sib-api-v3-sdk": "^8.5.0",
     "socket.io": "^4.2.0",
+    "streamifier": "^0.1.1",
     "uuid": "^11.0.3",
     "validatorjs": "^3.18.1"
   },

@@ -28,10 +28,9 @@ module.exports = {
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     callbackURL: process.env.FACEBOOK_CALLBACK_URL
   },
-  aws: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-    bucketName: process.env.AWS_BUCKET_NAME
+  cloud: {
+    accessKeyId: process.env.CLOUDINARY_API_KEY,
+    secretAccessKey: process.env.CLOUDINARY_API_SECRET,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME
   }
 };
